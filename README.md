@@ -1,13 +1,17 @@
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="assets/banner-dark.svg">
-  <img src="assets/banner-light.svg" alt="deon holo — i like modding stuff. agentic coding, mods, and useful little tools." width="100%">
-</picture>
-
 # hey, i'm deon.
 
 i like modding stuff. games, software, whatever makes me think “this would be better if it just did this.”
 
-lately i'm building with coding agents and **Spec-Driven Development**. i figure out how something should work, turn that into a spec, then build, test, and keep tweaking it.
+lately i'm building with coding agents and Spec-Driven Development. i figure out how something should work, turn that into a spec, then build, test, and keep tweaking it.
+
+## pacman, but i modded it
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/pacman-dark.svg">
+  <img src="assets/pacman-light.svg" alt="My contribution graph with Pacifist's Vow: Pac-Man eats a lime power-up, gains a temporary aura, and nearby ghosts fall asleep before respawning." width="100%">
+</picture>
+
+<sub>a little nod to [Pacifist's Vow](https://github.com/DeonHolo/Pacifists-Vow), my BG3 non-lethal overhaul. powered by my actual GitHub contributions.</sub>
 
 ## what i work on
 
@@ -35,20 +39,6 @@ WildMaps also earned **1st runner-up** and **Best Product** at CIT-U's ABM & GAS
 ## things i reach for
 
 `TypeScript / JavaScript` · `React` · `Java / Spring Boot` · `Python` · `PowerShell` · `Lua`
-
-## the github stuff
-
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="assets/stats-dark.svg">
-  <img src="assets/stats-light.svg" alt="GitHub activity, original public repository and star counts, and primary languages by repository count. Forks and this profile repository are excluded from repository statistics." width="100%">
-</picture>
-
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="assets/activity-dark.svg">
-  <img src="assets/activity-light.svg" alt="A skyline of my public contribution calendar. Each block is one day; taller blocks mean more contributions, on a logarithmic scale." width="100%">
-</picture>
-
-<sub>updated daily from GitHub. language counts use each repo's primary language.</sub>
 
 ---
 

@@ -283,8 +283,14 @@ def main():
     config = json.loads((arguments.out / 'profile.json').read_text(encoding='utf-8'))
     theme = arguments.theme or config['theme']
     data = json.loads(arguments.snapshot.read_text(encoding='utf-8')) if arguments.snapshot else fetch_snapshot(config['user'])
-    render(arguments.out, theme, data)
-    print(f'Generated {THEMES[theme]["name"]}: {data["total"]:,} contributions, '
+    if config.get('contribution_style') == 'pacifists-vow' and arguments.theme is None:
+        from pacifist_vow import write_assets
+        write_assets(arguments.out, data, config.get('player_style', 'cycle'))
+        name = "Pacifist's Vow"
+    else:
+        render(arguments.out, theme, data)
+        name = THEMES[theme]['name']
+    print(f'Generated {name}: {data["total"]:,} contributions, '
           f'{data["active_days"]} active days, {data["original_public_repos"]} original public repos.')
 
 
