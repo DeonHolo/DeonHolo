@@ -287,6 +287,10 @@ def main():
         from pacifist_vow import write_assets
         write_assets(arguments.out, data, config.get('player_style', 'cycle'))
         name = "Pacifist's Vow"
+    elif config.get('contribution_style') == 'dungeon' and arguments.theme is None:
+        from dungeon import write_assets
+        write_assets(arguments.out, data)
+        name = 'One more room'
     else:
         render(arguments.out, theme, data)
         name = THEMES[theme]['name']

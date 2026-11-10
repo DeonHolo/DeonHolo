@@ -4,14 +4,16 @@ i like modding stuff. games, software, whatever makes me think “this would be 
 
 lately i'm building with coding agents and Spec-Driven Development. i figure out how something should work, turn that into a spec, then build, test, and keep tweaking it.
 
-## pacman, but i modded it
+## one more room.
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="assets/pacman-dark.svg">
-  <img src="assets/pacman-light.svg" alt="My contribution graph with Pacifist's Vow: Pac-Man eats a lime power-up, gains a temporary aura, and nearby ghosts fall asleep before respawning." width="100%">
+  <source media="(prefers-reduced-motion: reduce)" srcset="assets/dungeon-still.png">
+  <img src="assets/dungeon.webp" alt="Three dungeon runs on my GitHub contribution grid. The chest swallows Deon, a goblin makes a run for it, and a skeleton janitor hauls out the mess and resets the trap." width="100%">
 </picture>
 
-<sub>a little nod to [Pacifist's Vow](https://github.com/DeonHolo/Pacifists-Vow), my BG3 non-lethal overhaul. powered by my actual GitHub contributions.</sub>
+<sub>i turned my contribution grid into a dungeon. three runs, one very hungry chest. the grid refreshes daily from github.</sub>
+
+<sub>pixel art · [Zerie pack 01](https://zerie.itch.io/tiny-rpg-character-asset-pack) + [pack 02](https://zerie.itch.io/tiny-rpg-character-asset-pack-02) · [LuizMelo](https://luizmelo.itch.io/monsters-creatures-fantasy) · [rvros](https://rvros.itch.io/pixel-art-animated-slime) · [joraxus](https://inspired-goblin.itch.io/chest-mimic)</sub>
 
 ## what i work on
 
