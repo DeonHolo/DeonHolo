@@ -2,7 +2,9 @@
 
 i like modding stuff. games, software, whatever makes me think “this would be better if it just did this.”
 
-lately i'm building with coding agents and Spec-Driven Development. i figure out how something should work, turn that into a spec, then build, test, and keep tweaking it.
+lately i'm building with coding agents using Spec-Driven Development. i figure out how something should work, turn that into a spec, then build, test, and keep tweaking it.
+
+also into roguelites, which probably explains the contribution graph.
 
 ## one more run
 
