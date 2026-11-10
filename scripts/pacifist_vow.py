@@ -10,9 +10,11 @@ import math
 from pathlib import Path
 import xml.etree.ElementTree as ET
 
-COLS, ROWS, TILE, PAD, TOP = 53, 7, 21, 28, 112
-WIDTH, HEIGHT = COLS * TILE + PAD * 2, 350
+COLS, ROWS, TILE, PAD, TOP = 53, 7, 21, 28, 80
+GRID_BOTTOM = TOP + ROWS * TILE
+WIDTH, HEIGHT = COLS * TILE + PAD * 2, GRID_BOTTOM + 91
 DT, STEPS, AURA_STEPS, SLEEP_STEPS = .2, 150, 40, 15
+START_STEP = 13
 AURA_RADIUS = 2.65
 
 PALETTES = {
@@ -119,7 +121,7 @@ def heading_for_motion(start, end, fallback=0):
     return {(1, 0): 0, (-1, 0): 180, (0, -1): 270, (0, 1): 90}.get(delta, fallback)
 
 
-def advance_ghost(ghost, index, step, pacman, aura, captures, respawns):
+def advance_ghost(ghost, step, pacman, aura, captures, respawns):
     if step < ghost['sleeping_until']:
         return
     if ghost['sleeping_until'] == step:
@@ -128,7 +130,7 @@ def advance_ghost(ghost, index, step, pacman, aura, captures, respawns):
             ghost['pos'] = next(point for point in neighbors(ghost['home']) if point != pacman)
         respawns.append({'step': step, 'name': ghost['name'], 'pos': list(ghost['pos']),
                          'inside_aura': aura and distance(ghost['pos'], pacman) <= AURA_RADIUS})
-    elif step >= 20 and step % 3 == index % 3:
+    elif step >= START_STEP:
         path = path_to(ghost['pos'], pacman)
         if len(path) > 1 and path[1] != pacman:
             ghost['pos'] = path[1]
@@ -158,7 +160,7 @@ def simulate(data):
     respawns = []
 
     for step in range(STEPS):
-        if step >= 13:
+        if step >= START_STEP:
             avoid = {ghost['pos'] for ghost in ghosts}
             if pickup_step is None:
                 target = pickup
@@ -187,8 +189,8 @@ def simulate(data):
             aura_until = step + AURA_STEPS
 
         aura = pickup_step is not None and step < aura_until
-        for index, ghost in enumerate(ghosts):
-            advance_ghost(ghost, index, step, pacman, aura, captures, respawns)
+        for ghost in ghosts:
+            advance_ghost(ghost, step, pacman, aura, captures, respawns)
 
         frames.append({
             'pacman': list(pacman), 'facing': facing, 'aura': aura,
@@ -317,26 +319,24 @@ def render(data, sim, mode='dark', closeup=False, skin='cycle'):
     c = PALETTES[mode]
     frames = sim['frames']
     length = len(frames)
-    viewbox = f'880 82 270 190' if closeup else f'0 0 {WIDTH} {HEIGHT}'
+    viewbox = f'880 {TOP-30} 270 190' if closeup else f'0 0 {WIDTH} {HEIGHT}'
     width, height = (810, 570) if closeup else (WIDTH, HEIGHT)
     parts = [f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="{viewbox}" role="img" aria-labelledby="title desc" data-player-style="{skin}" data-ghost-style="{skin}" data-round-duration="{length * DT:g}">',
-             '<title id="title">Pacifist\'s Vow — DeonHolo\'s Pac-Man contribution graph</title>',
+             '<title id="title">DeonHolo\'s Pac-Man contribution graph</title>',
              f'<desc id="desc">{data["total"]:,} contributions and {data["active_days"]} active days in the public rolling-year calendar. Pac-Man must eat the lime power-up before his aura activates. Nearby ghosts fall asleep and later respawn. Respawning inside the active aura immediately puts a ghost back to sleep. The power-up effect expires after eight seconds. Matching Classic, Pixel and Outline casts cycle on successive replays. Updated {data["updated"]} UTC.</desc>',
              '<style>text{font-family:Segoe UI,Arial,sans-serif}.mono{font-family:Consolas,Menlo,monospace}.still,.reduced-camera{display:none}@media(prefers-reduced-motion:reduce){.motion,.moving-camera{display:none}.still,.reduced-camera{display:inline}}</style>',
              f'<rect x="0" y="0" width="{WIDTH}" height="{HEIGHT}" fill="{c["bg"]}" rx="12"/>']
     if not closeup:
         parts.extend([
             f'<text x="28" y="32" class="mono" font-size="10" letter-spacing="1.6" fill="{c["muted"]}">DEONHOLO / MODDED CONTRIBUTIONS</text>',
-            f'<text x="28" y="66" font-size="26" letter-spacing="-.7" font-weight="650" fill="{c["text"]}">pacifist\'s vow</text>',
             f'<text x="{WIDTH-28}" y="33" text-anchor="end" class="mono" font-size="12" fill="{c["lime"]}">{data["total"]:,} contributions / last year</text>',
-            f'<text x="{WIDTH-28}" y="65" text-anchor="end" font-size="12" fill="{c["muted"]}">a non-lethal patch for my contribution graph.</text>',
         ])
         if skin == 'cycle':
             parts.append('<g class="motion">' + matching_cast(
-                lambda name: f'<text x="28" y="83" class="mono" font-size="9" letter-spacing="1" fill="{c["lime"]}">{PLAYER_STYLES[name]["name"].upper()} CAST / AUTO CYCLE</text>', skin) + '</g>')
-            parts.append(f'<text class="still" x="28" y="83" font-size="9" fill="{c["lime"]}">CLASSIC CAST</text>')
+                lambda name: f'<text x="28" y="50" class="mono" font-size="9" letter-spacing="1" fill="{c["lime"]}">{PLAYER_STYLES[name]["name"].upper()} CAST / AUTO CYCLE</text>', skin) + '</g>')
+            parts.append(f'<text class="still" x="28" y="50" font-size="9" fill="{c["lime"]}">CLASSIC CAST</text>')
         else:
-            parts.append(f'<text x="28" y="83" class="mono" font-size="9" letter-spacing="1" fill="{c["lime"]}">{PLAYER_STYLES[skin]["name"].upper()} CAST</text>')
+            parts.append(f'<text x="28" y="50" class="mono" font-size="9" letter-spacing="1" fill="{c["lime"]}">{PLAYER_STYLES[skin]["name"].upper()} CAST</text>')
 
     def grid(animated):
         items = []
@@ -420,15 +420,16 @@ def render(data, sim, mode='dark', closeup=False, skin='cycle'):
         parts.append(f'<g transform="translate({gx} {gy})">' + ghost_shape(ghost['color'], c, ghost['sleeping'], still_skin, False) + '</g>')
     parts.append('</g>')
     if not closeup:
-        parts.append(f'<path d="M28 287H{WIDTH-28}" stroke="{c["line"]}"/>')
-        parts.append(f'<circle cx="34" cy="312" r="5" fill="{c["lime"]}"/><circle cx="34" cy="312" r="8" fill="none" stroke="{c["lime"]}" opacity=".5"/>')
-        parts.append(f'<text x="50" y="316" font-size="12" fill="{c["muted"]}">eat the power-up</text>')
-        parts.append(f'<circle cx="237" cy="312" r="8" fill="{c["lime"]}" fill-opacity=".09" stroke="{c["lime"]}" opacity=".8"/>')
-        parts.append(f'<text x="254" y="316" font-size="12" fill="{c["muted"]}">aura on · 8 seconds</text>')
-        parts.append(f'<g class="motion" transform="translate(457 312)">' + ghost_shape('#efa7cc', c, True, skin) + '</g>')
-        parts.append(f'<g class="still" transform="translate(457 312)">' + ghost_shape('#efa7cc', c, True, still_skin, False) + '</g>')
-        parts.append(f'<text x="475" y="316" font-size="12" fill="{c["muted"]}">ghosts nap, then respawn</text>')
-        parts.append(f'<text x="{WIDTH-28}" y="316" text-anchor="end" class="mono" font-size="10" fill="{c["muted"]}">{data["active_days"]} ACTIVE DAYS · {data["original_public_repos"]} ORIGINAL REPOS · {data["stars"]} STARS</text>')
+        legend_y = GRID_BOTTOM + 53
+        parts.append(f'<path d="M28 {GRID_BOTTOM+28}H{WIDTH-28}" stroke="{c["line"]}"/>')
+        parts.append(f'<circle cx="34" cy="{legend_y}" r="5" fill="{c["lime"]}"/><circle cx="34" cy="{legend_y}" r="8" fill="none" stroke="{c["lime"]}" opacity=".5"/>')
+        parts.append(f'<text x="50" y="{legend_y+4}" font-size="12" fill="{c["muted"]}">eat the power-up</text>')
+        parts.append(f'<circle cx="237" cy="{legend_y}" r="8" fill="{c["lime"]}" fill-opacity=".09" stroke="{c["lime"]}" opacity=".8"/>')
+        parts.append(f'<text x="254" y="{legend_y+4}" font-size="12" fill="{c["muted"]}">aura on · 8 seconds</text>')
+        parts.append(f'<g class="motion" transform="translate(457 {legend_y})">' + ghost_shape('#efa7cc', c, True, skin) + '</g>')
+        parts.append(f'<g class="still" transform="translate(457 {legend_y})">' + ghost_shape('#efa7cc', c, True, still_skin, False) + '</g>')
+        parts.append(f'<text x="475" y="{legend_y+4}" font-size="12" fill="{c["muted"]}">ghosts nap, then respawn</text>')
+        parts.append(f'<text x="{WIDTH-28}" y="{legend_y+4}" text-anchor="end" class="mono" font-size="10" fill="{c["muted"]}">{data["active_days"]} ACTIVE DAYS · {data["original_public_repos"]} ORIGINAL REPOS · {data["stars"]} STARS</text>')
     parts.append('</svg>')
     art = ''.join(parts)
     if closeup:
@@ -440,7 +441,7 @@ def render(data, sim, mode='dark', closeup=False, skin='cycle'):
         scene = children[4:]
         camera = ET.Element(f'{{{namespace}}}g', {'class': 'moving-camera'})
         positions = [frame['pacman'] for frame in frames]
-        offsets = [(1015 - (PAD + p[0] * TILE + TILE / 2), 177 - (TOP + p[1] * TILE + TILE / 2)) for p in positions]
+        offsets = [(1015 - (PAD + p[0] * TILE + TILE / 2), 65 - (p[1] * TILE + TILE / 2)) for p in positions]
         camera.set('transform', f'translate({offsets[0][0]:g} {offsets[0][1]:g})')
         ET.SubElement(camera, f'{{{namespace}}}animateTransform', {
             'attributeName': 'transform', 'type': 'translate',

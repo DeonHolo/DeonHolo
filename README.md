@@ -28,7 +28,7 @@ lately i'm building with coding agents and Spec-Driven Development. i figure out
 | [WildTrack](https://github.com/DeonHolo/WildTrack) | capstone submissions, adviser and AI reviews, and final PDF archives in one workspace. |
 | [DnDGPT](https://github.com/DeonHolo/DnDGPT) | ChatGPT as your GM, with a saved campaign dashboard and rules for D&D and my homebrew games. |
 | [qBitLauncher](https://github.com/DeonHolo/qBitLauncher) | handles the post-download routine: extracting archives, finding executables, and cleaning up. |
-| [Steam hover previews](https://github.com/DeonHolo/1337xSteamHoverPreview) / [CS.RIN.RU version](https://github.com/DeonHolo/cs-rin-ru-SteamHoverPreview) | Steam game info without opening another tab. |
+| [1337x Steam hover previews](https://github.com/DeonHolo/1337xSteamHoverPreview) / [CS.RIN.RU version](https://github.com/DeonHolo/cs-rin-ru-SteamHoverPreview) | Steam game info without opening another tab. Featured on [FMHY.net!](https://fmhy.net/gaming-tools#:~:text=1337x%20Store%20Hover%20%2D%20Add%20Steam%20Store%20Hover%20Details%20to%201337x) |
 | [Pacifist's Vow](https://github.com/DeonHolo/Pacifists-Vow) | a BG3 non-lethal overhaul for melee, ranged attacks, and spells. |
 | [WildMaps](https://github.com/DeonHolo/WildMaps) | a campus exploration PWA with landmark recognition and collectible badges. |
 
