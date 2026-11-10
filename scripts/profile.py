@@ -290,7 +290,7 @@ def main():
     elif config.get('contribution_style') == 'dungeon' and arguments.theme is None:
         from dungeon import write_assets
         write_assets(arguments.out, data)
-        name = 'One more room'
+        name = 'One more run'
     else:
         render(arguments.out, theme, data)
         name = THEMES[theme]['name']

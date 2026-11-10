@@ -1,6 +1,6 @@
 # keeping the profile fresh
 
-The profile's Torchlit dungeon uses the public rolling-year contribution calendar. The WebP loops through Dine & Dash, All You Can Eat, and Trapdoor with the janitor ending. The README also offers a still image for reduced motion.
+The profile's Torchlit dungeon uses the public rolling-year contribution calendar. The 60 FPS WebP loops through Dine & Dash, All You Can Eat, and Trapdoor with the janitor ending. The README also offers a still image for reduced motion.
 
 The workflow refreshes the dungeon's tile colors, month labels, and contribution total daily at 01:23 UTC (09:23 in Singapore and the Philippines). Changes to its configuration, renderer, or animation tracks on `main` also trigger a refresh. To refresh on demand, use **Actions → Refresh profile graphics → Run workflow**.
 
