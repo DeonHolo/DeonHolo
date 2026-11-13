@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import argparse
 from collections import Counter
-from datetime import date, datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from html import escape
 from html.parser import HTMLParser
 import json
@@ -70,13 +70,23 @@ class CalendarParser(HTMLParser):
             self.tip_text = []
 
 
-def parse_calendar(html):
+def parse_calendar(html, *, year=None):
     parser = CalendarParser()
     parser.feed(html)
     days = sorted(parser.cells.values(), key=lambda day: day['date'])
-    if len(days) < 350 or any(day['count'] is None for day in days):
+    complete = len(days) >= 350
+    period = 'the last year'
+    if year is not None:
+        first = date(year, 1, 1)
+        expected = (date(year, 12, 31) - first).days + 1
+        complete = len(days) == expected and all(
+            day['date'] == (first + timedelta(days=index)).isoformat()
+            for index, day in enumerate(days)
+        )
+        period = str(year)
+    if not complete or any(day['count'] is None for day in days):
         raise ValueError('Incomplete public contribution calendar; keeping existing graphics.')
-    match = re.search(r'([\d,]+)\s+contributions?\s+in the last year', html)
+    match = re.search(rf'([\d,]+)\s+contributions?\s+in {period}\b', html)
     total = sum(day['count'] for day in days)
     if match and total != int(match.group(1).replace(',', '')):
         raise ValueError('Calendar total does not match its cells; keeping existing graphics.')
@@ -96,7 +106,7 @@ def request(url, is_json=False):
     return json.loads(text) if is_json else text
 
 
-def fetch_snapshot(user):
+def fetch_snapshot(user, *, year=None):
     repos = []
     page = 1
     while True:
@@ -105,8 +115,14 @@ def fetch_snapshot(user):
         if len(batch) < 100:
             break
         page += 1
-    days = parse_calendar(request(f'https://github.com/users/{user}/contributions'))
-    return make_snapshot(user, repos, days)
+    url = f'https://github.com/users/{user}/contributions'
+    if year is not None:
+        url += f'?from={year}-01-01&to={year}-12-31'
+    days = parse_calendar(request(url), year=year)
+    snapshot = make_snapshot(user, repos, days)
+    if year is not None:
+        snapshot['calendar_year'] = year
+    return snapshot
 
 
 def make_snapshot(user, repos, days):
@@ -282,14 +298,20 @@ def main():
     arguments = parser.parse_args()
     config = json.loads((arguments.out / 'profile.json').read_text(encoding='utf-8'))
     theme = arguments.theme or config['theme']
-    data = json.loads(arguments.snapshot.read_text(encoding='utf-8')) if arguments.snapshot else fetch_snapshot(config['user'])
-    if config.get('contribution_style') == 'pacifists-vow' and arguments.theme is None:
+    style = config.get('contribution_style') if arguments.theme is None else None
+    if arguments.snapshot:
+        data = json.loads(arguments.snapshot.read_text(encoding='utf-8'))
+    else:
+        year = datetime.now(timezone.utc).year if style == 'dungeon' else None
+        data = fetch_snapshot(config['user'], year=year)
+    if style == 'pacifists-vow':
         from pacifist_vow import write_assets
         write_assets(arguments.out, data, config.get('player_style', 'cycle'))
         name = "Pacifist's Vow"
-    elif config.get('contribution_style') == 'dungeon' and arguments.theme is None:
+    elif style == 'dungeon':
         from dungeon import write_assets
-        write_assets(arguments.out, data)
+        calendar = write_assets(arguments.out, data)
+        data.update(total=calendar['total'], active_days=calendar['active_days'])
         name = 'One more run'
     else:
         render(arguments.out, theme, data)
