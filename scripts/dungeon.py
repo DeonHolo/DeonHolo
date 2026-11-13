@@ -7,7 +7,7 @@ from tempfile import TemporaryDirectory
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont, ImageSequence
 
-from pacifist_vow import COLS, ROWS
+from pacifist_vow import COLS, ROWS, calendar_grid
 
 
 TRACKS = Path(__file__).with_name('dungeon-tracks')
@@ -17,28 +17,30 @@ PALETTE = np.array([
 
 
 def calendar_layout(data):
-    days = data['days']
-    year = data.get('calendar_year', int(max(day['date'] for day in days)[:4]))
-    first = date(year, 1, 1)
-    last = date(year, 12, 31)
-    offset = (first.weekday() + 1) % ROWS
-    if (last - first).days + offset >= COLS * ROWS:
-        # A leap year starting on Saturday fits the board with Monday-start weeks.
-        offset = first.weekday()
+    grid = calendar_grid(data)
+    year = data.get('calendar_year')
+    if year is not None and (COLS, 0) in grid:
+        # A saved Saturday-start leap year fits with Monday-start weeks.
+        grid = {divmod(column * ROWS + row - 1, ROWS): day for (column, row), day in grid.items()}
 
-    levels = [0] * (COLS * ROWS)
-    total = active_days = 0
-    for day in days:
-        day_date = date.fromisoformat(day['date'])
-        if day_date.year == year:
-            levels[(day_date - first).days + offset] = day['level']
-            total += day['count']
-            active_days += day['count'] > 0
-
-    month_starts = [date(year, month, 1) for month in range(1, 13)]
-    months = [(((start - first).days + offset) // ROWS, start.strftime('%b'))
-              for start in month_starts]
-    return {'year': year, 'total': total, 'active_days': active_days, 'levels': levels, 'months': months}
+    levels = []
+    months = []
+    previous_month = None
+    for column in range(COLS):
+        week = [grid.get((column, row)) for row in range(ROWS)]
+        levels.extend(day['level'] if day else 0 for day in week)
+        first_day = next((day for day in week if day), None)
+        if first_day:
+            month = date.fromisoformat(first_day['date']).strftime('%b')
+            if month != previous_month:
+                months.append((column, month))
+                previous_month = month
+    period = '/ last year' if year is None else f'in {year}'
+    return {
+        'period': period, 'year': year, 'total': data['total'],
+        'active_days': sum(day['count'] > 0 for day in data['days']),
+        'levels': levels, 'months': months,
+    }
 
 
 def timed_frames(image):
@@ -77,7 +79,7 @@ def labels(width, calendar):
     draw = ImageDraw.Draw(overlay)
     count_font = ImageFont.load_default(size=round(12 * scale))
     month_font = ImageFont.load_default(size=round(10 * scale))
-    draw.text((1139 * scale, 31 * scale), f'{calendar["total"]:,} contributions in {calendar["year"]}',
+    draw.text((1139 * scale, 31 * scale), f'{calendar["total"]:,} contributions {calendar["period"]}',
               font=count_font, anchor='rs', fill='#f1c98e')
     for column, month in calendar['months']:
         draw.text(((28 + 21 * column) * scale, 68 * scale), month,

@@ -302,8 +302,7 @@ def main():
     if arguments.snapshot:
         data = json.loads(arguments.snapshot.read_text(encoding='utf-8'))
     else:
-        year = datetime.now(timezone.utc).year if style == 'dungeon' else None
-        data = fetch_snapshot(config['user'], year=year)
+        data = fetch_snapshot(config['user'])
     if style == 'pacifists-vow':
         from pacifist_vow import write_assets
         write_assets(arguments.out, data, config.get('player_style', 'cycle'))
