@@ -1,12 +1,12 @@
 # keeping the profile fresh
 
-The profile's Torchlit dungeon uses GitHub's default rolling contribution calendar for the last year. The 60 FPS WebP loops through Dine & Dash, All You Can Eat, and Trapdoor with the janitor ending. The README also offers a still image for reduced motion.
+The profile's Torchlit dungeon uses GitHub's default rolling contribution calendar for the last year. The 60 FPS WebP loops through Dine & Dash, All You Can Eat, and Trapdoor with the janitor ending. The README also offers a still image for reduced motion. Google WebP 1.6.0 encodes the animation with mixed compression, sharp color conversion, quality 85, and effort 6.
 
 The workflow is scheduled to refresh the dungeon's tile colors, month labels, and contribution total daily at 01:23 UTC (09:23 in Singapore and the Philippines). GitHub may start scheduled runs later. Changes to its configuration, renderer, or animation tracks on `main` also trigger a refresh. To refresh on demand, use **Actions → Refresh profile graphics → Run workflow**.
 
 No personal access token or new repository secret is needed. The workflow uses the temporary token GitHub provides for this repository.
 
-To regenerate locally, use Python 3.11 or newer and install the renderer dependencies.
+To regenerate locally, use Python 3.11 or newer and install the renderer dependencies. Install the [Google WebP 1.6.0 tools](https://developers.google.com/speed/webp/download), then put `img2webp` on PATH or set `DUNGEON_WEBP_ENCODER` to its absolute executable path.
 
 ```sh
 python -m pip install -r scripts/dungeon-requirements.txt

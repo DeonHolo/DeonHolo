@@ -10,7 +10,7 @@ also into roguelites, which probably explains the contribution graph.
 
 <picture>
   <source media="(prefers-reduced-motion: reduce)" srcset="assets/dungeon-still.png">
-  <img src="assets/dungeon.webp?v=61" alt="Three dungeon runs on my GitHub contribution grid. The chest swallows Deon, a goblin makes a run for it, and a skeleton janitor hauls out the mess and resets the trap." width="100%">
+  <img src="assets/dungeon.webp?v=62" alt="Three dungeon runs on my GitHub contribution grid. The chest swallows Deon, a goblin makes a run for it, and a skeleton janitor hauls out the mess and resets the trap." width="100%">
 </picture>
 
 <sub>got a bit carried away with the contribution graph lol.</sub>

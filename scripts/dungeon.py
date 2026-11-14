@@ -1,7 +1,10 @@
 """Refresh the calendar in the rendered three-run dungeon animation."""
 
 from datetime import date
+import os
 from pathlib import Path
+import shutil
+import subprocess
 from tempfile import TemporaryDirectory
 
 import numpy as np
@@ -87,6 +90,26 @@ def labels(width, calendar):
     return overlay
 
 
+def encode_animation(frames, durations, destination):
+    encoder = os.environ.get('DUNGEON_WEBP_ENCODER') or shutil.which('img2webp')
+    if not encoder:
+        raise RuntimeError('Install Google WebP 1.6.0 tools or set DUNGEON_WEBP_ENCODER to img2webp.')
+    directory = destination.parent / 'frames'
+    directory.mkdir()
+    arguments = [encoder, '-min_size', '-mixed', '-sharp_yuv', '-loop', '0', '-m', '6', '-q', '85']
+    previous_duration = None
+    for index, (frame, duration) in enumerate(zip(frames, durations)):
+        # Short filenames also keep the full command within Windows' argument limit.
+        name = format(index, 'x')
+        frame.save(directory / name, format='PNG', compress_level=1)
+        if duration != previous_duration:
+            arguments.extend(('-d', str(duration)))
+            previous_duration = duration
+        arguments.append(name)
+    arguments.extend(('-o', str(destination.resolve())))
+    subprocess.run(arguments, cwd=directory, check=True, capture_output=True)
+
+
 def write_assets(destination, data):
     calendar = calendar_layout(data)
     # Map value zero marks pixels outside the contribution tiles.
@@ -114,8 +137,7 @@ def write_assets(destination, data):
     with TemporaryDirectory(dir=assets) as staging:
         animated = Path(staging) / 'dungeon.webp'
         still = Path(staging) / 'dungeon-still.png'
-        frames[0].save(animated, save_all=True, append_images=frames[1:], duration=durations,
-                       loop=0, quality=91, method=4, allow_mixed=True, minimize_size=True)
+        encode_animation(frames, durations, animated)
         frames[0].save(still, optimize=True)
         animated.replace(assets / animated.name)
         still.replace(assets / still.name)
