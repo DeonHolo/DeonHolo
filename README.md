@@ -27,6 +27,7 @@ also into roguelites, which probably explains the contribution graph.
 
 ## a few highlights
 
+- i'm building [DnDGPT](https://github.com/DeonHolo/DnDGPT) — D&D + my own homebrew RPGs with ChatGPT as the GM, and a dashboard that keeps track of the campaign.
 - my [1337x](https://github.com/DeonHolo/1337xSteamHoverPreview) and [CS.RIN.RU](https://github.com/DeonHolo/cs-rin-ru-SteamHoverPreview) Steam hover userscripts are featured on [FMHY.net!](https://fmhy.net/gaming-tools#:~:text=1337x%20Store%20Hover%20%2D%20Add%20Steam%20Store%20Hover%20Details%20to%201337x)
 - [WildMaps](https://github.com/DeonHolo/WildMaps) earned **1st runner-up** and **Best Product** at CIT-U's ABM & GAS Days Pitch Conference 2026.
 
